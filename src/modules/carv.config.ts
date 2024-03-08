@@ -1,4 +1,4 @@
-import { UserAgents } from '../utils/assets/user-agents.asset';
+import { UserAgents } from '../utils/helpers/user-agents.asset';
 import { choose } from '../utils/helpers/random.helper';
 
 export const CARV_MINT_CHAINS = ['ronin', 'opbnb'] as const;

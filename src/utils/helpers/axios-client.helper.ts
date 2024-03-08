@@ -1,8 +1,7 @@
 import axiosRetry from 'axios-retry';
 import axios from 'axios';
-import { choose } from './random.helper';
-import { UserAgents } from '../assets/user-agents.asset';
 import { getProxyAgent } from './proxy.helper';
+import { logger } from './logger.helper';
 
 export const getClient = (
   params: { proxy: string; errorWaitSec?: number; errorRetryTimes?: number },
@@ -24,9 +23,9 @@ export const getClient = (
     (config) => {
       try {
         const str = JSON.stringify({ data: config.data, params: config.params, url: config.url }, null, 2);
-        console.debug(`Request: ${str}`);
+        logger.debug(`Request: ${str}`);
       } catch (error: any) {
-        console.debug(`Request config debug error (${config.url}) ${error?.message}`);
+        logger.debug(`Request config debug error (${config.url}) ${error?.message}`);
       }
 
       return config;
@@ -34,9 +33,9 @@ export const getClient = (
     (error) => {
       try {
         const str = JSON.stringify(error, null, 2);
-        console.debug(`Request error: ${str}`);
+        logger.debug(`Request error: ${str}`);
       } catch (error: any) {
-        console.debug(`Request error debug error ${error?.message}`);
+        logger.debug(`Request error debug error ${error?.message}`);
       }
 
       return Promise.reject(error);
@@ -47,9 +46,9 @@ export const getClient = (
     (response) => {
       try {
         const str = JSON.stringify({ data: response.data, url: response?.config?.url }, null, 2);
-        console.debug(`Response: ${str}`);
+        logger.debug(`Response: ${str}`);
       } catch (error: any) {
-        console.debug(`Response config debug error (${response?.config?.url}) ${error?.message}`);
+        logger.debug(`Response config debug error (${response?.config?.url}) ${error?.message}`);
       }
 
       return response;
@@ -57,9 +56,9 @@ export const getClient = (
     (error) => {
       try {
         const str = JSON.stringify(error, null, 2);
-        console.debug(`Response error: ${str}`);
+        logger.debug(`Response error: ${str}`);
       } catch (error: any) {
-        console.debug(`Response error debug error ${error?.message}`);
+        logger.debug(`Response error debug error ${error?.message}`);
       }
 
       return Promise.reject(error);
@@ -71,7 +70,7 @@ export const getClient = (
     shouldResetTimeout: true,
     retryDelay: () => errorWaitSec * 1000,
     onRetry: (retryCount, error) => {
-      console.error(`error ${error.message}. Retrying ${retryCount}`);
+      logger.error(`error ${error.message}. Retrying ${retryCount}`);
     },
     retryCondition: () => true,
   });

@@ -5,6 +5,7 @@ import { randomIntInRange } from '../utils/helpers/random.helper';
 import { RPC_URL, errorRetryTimes, errorWaitSec } from '../config.const';
 import { CARV_ABI, CARV_MINT_CHAINS, CHAIN_INFO, getCarvHeaders } from './carv.config';
 import { getClient } from '../utils/helpers/axios-client.helper';
+import { logger } from '../utils/helpers/logger.helper';
 
 interface MintData {
   contract: string;
@@ -53,7 +54,7 @@ export class Carv {
       this.headers
     );
 
-    console.log('Successfully logged in');
+    logger.info(`${this.accountName} | Successfully logged in`);
     await sleep(randomIntInRange(10000, 15000));
   }
 
@@ -81,7 +82,7 @@ export class Carv {
     const txResponse = await this.wallet.sendTransaction(tx);
     await txResponse.wait();
 
-    console.log(`Transaction successful with hash: ${txResponse.hash}`);
+    logger.info(`${this.accountName} | ${chain} | Transaction successful with hash: ${txResponse.hash}`);
   }
 
   async execute(): Promise<void> {
@@ -96,9 +97,9 @@ export class Carv {
         if (chain !== 'ronin') {
           await this.makeTransaction(chain, response.data);
         }
-        console.log(`${this.accountName} | Successfully minted on ${chain}`);
+        logger.info(`${this.accountName} | Successfully minted on ${chain}`);
       } else {
-        console.log(`${this.accountName} | Already minted on ${chain}`);
+        logger.info(`${this.accountName} | Already minted on ${chain}`);
       }
     }
   }

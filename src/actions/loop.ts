@@ -8,13 +8,14 @@ import { formatRel } from '../utils/helpers/time.helper';
 import { importETHWallets, importNames, importProxies } from '../utils/helpers/file-import.helper';
 import { withRetry } from '../utils/helpers/retry.helper';
 import { Carv } from '../modules/carv.module';
+import { logger } from '../utils/helpers/logger.helper';
 
 axiosRetry(axios, {
   retries: 3,
   shouldResetTimeout: true,
   retryDelay: () => 2 * 60 * 1000,
   onRetry: (retryCount, error) => {
-    console.error(`error ${error.message}. Retrying ${retryCount}`);
+    logger.error(`Error => ${error.message}. Retrying ${retryCount}`);
   },
   retryCondition: () => true,
 });
@@ -24,12 +25,17 @@ const loop = async () => {
   const names = await importNames();
   const proxies = await importProxies();
 
-  const queue = new Queue(privateKeys, names, 30, 60);
+  if (!(privateKeys.length === names.length && names.length === proxies.length)) {
+    logger.error('Private keys count should be equal to name cound and proxies count');
+    throw new Error('Private keys count should be equal to name cound and proxies count');
+  }
+
+  const queue = new Queue(privateKeys, names, 30, 120);
 
   const lastRunTime = queue.lastRunTime();
   const secondsToInit = differenceInSeconds(lastRunTime, new Date());
 
-  console.info(`approx all wallets (${privateKeys.length}) will be initialized ${formatRel(secondsToInit)}`);
+  logger.info(`All wallets (${privateKeys.length}) will be initialized approximately in ${formatRel(secondsToInit)}`);
 
   let isFirstIteration = true;
 
@@ -53,12 +59,15 @@ const loop = async () => {
     try {
       await withRetry(async () => await new Carv(key, name, proxy).execute());
     } catch (error) {
-      console.error(`${name} | ${(error as Error)?.message}`);
+      logger.error(`${name} | ${(error as Error)?.message}`);
       await sleep(10);
     }
+
+    const nextRunSec = queue.push(queueItem);
+    logger.info(`${name} | next run ${formatRel(nextRunSec)}`);
   }
 
-  console.info('done');
+  logger.info('Invocation success!');
 };
 
-loop().catch((error) => console.error(error.message));
+loop().catch((error) => logger.error(error.message));
