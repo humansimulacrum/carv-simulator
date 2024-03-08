@@ -47,7 +47,7 @@ const loop = async () => {
     if (!isFirstIteration) {
       const pauseSec = Math.max(differenceInSeconds(queueItem.nextRunTime, new Date()), 0);
 
-      await sleep(pauseSec);
+      await sleep(pauseSec * 1000);
     }
 
     isFirstIteration = false;
@@ -60,7 +60,7 @@ const loop = async () => {
       await withRetry(async () => await new Carv(key, name, proxy).execute());
     } catch (error) {
       logger.error(`${name} | ${(error as Error)?.message}`);
-      await sleep(10);
+      await sleep(10 * 1000);
     }
 
     const nextRunSec = queue.push(queueItem);
