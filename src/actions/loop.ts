@@ -9,6 +9,7 @@ import { importETHWallets, importNames, importProxies } from '../utils/helpers/f
 import { withRetry } from '../utils/helpers/retry.helper';
 import { Carv } from '../modules/carv.module';
 import { logger } from '../utils/helpers/logger.helper';
+import { maxSleepBetweenWallets, minSleepBetweenWallets } from '../config.const';
 
 axiosRetry(axios, {
   retries: 3,
@@ -30,7 +31,7 @@ const loop = async () => {
     throw new Error('Private keys count should be equal to name cound and proxies count');
   }
 
-  const queue = new Queue(privateKeys, names, 30, 120);
+  const queue = new Queue(privateKeys, names, minSleepBetweenWallets, maxSleepBetweenWallets);
 
   const lastRunTime = queue.lastRunTime();
   const secondsToInit = differenceInSeconds(lastRunTime, new Date());
