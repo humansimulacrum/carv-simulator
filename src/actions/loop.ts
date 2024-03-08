@@ -3,11 +3,9 @@ import { differenceInSeconds } from 'date-fns';
 import axiosRetry from 'axios-retry';
 
 import Queue from '../utils/helpers/queue.helper';
-import { getClient } from '../utils/helpers/axios-client.helper';
 import { sleep } from '../utils/helpers/sleep.helper';
 import { formatRel } from '../utils/helpers/time.helper';
 import { importETHWallets, importNames, importProxies } from '../utils/helpers/file-import.helper';
-import { errorRetryTimes, errorWaitSec } from '../config.const';
 import { withRetry } from '../utils/helpers/retry.helper';
 import { Carv } from '../modules/carv.module';
 

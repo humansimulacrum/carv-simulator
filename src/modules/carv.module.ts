@@ -74,12 +74,9 @@ export class Carv {
     const contractAddress = ethers.utils.getAddress(data.contract);
     const contract = new ethers.Contract(contractAddress, CARV_ABI, this.wallet);
 
-    const tx = await contract.populateTransaction.mintSoul(
-      data.permit.account,
-      data.permit.amount,
-      data.permit.ymd,
-      data.signature
-    );
+    const mintData = [data.permit.account, data.permit.amount, data.permit.ymd];
+
+    const tx = await contract.populateTransaction.mintSoul(mintData, data.signature);
 
     const txResponse = await this.wallet.sendTransaction(tx);
     await txResponse.wait();

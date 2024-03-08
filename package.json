@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "src/index.ts",
   "scripts": {
-    "register": "ts-node ./src/actions/loop.ts"
+    "start": "ts-node ./src/actions/loop.ts"
   },
   "license": "ISC",
   "dependencies": {
